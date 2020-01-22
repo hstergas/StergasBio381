@@ -8,7 +8,8 @@ output:
 ---
 
 ## Homework 1
-* [Typora Homework 1.15.2020](Homework 1_Typora_1.15.20.html)
+* [Typora Homework 1.15.2020 html](Homework1_Typora.html)
+* [Typora Homework 1.15.2020 PDF](Homework 1_Typora_1.15.20.pdf)
 
 
 
