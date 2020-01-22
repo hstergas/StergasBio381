@@ -3,8 +3,8 @@ title: "Bio381 Homework"
 author: "Helaina Stergas"
 date: "1/22/2020"
 output: 
-  html_document: 
-    highlight: espresso
+  prettydoc::html_pretty:
+    theme: cayman
 ---
 
 ## Homework 1
