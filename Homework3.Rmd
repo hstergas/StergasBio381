@@ -1,0 +1,125 @@
+---
+title: "Homework 3: Regular Expressions"
+author: "Helaina Stergas"
+date: "1/29/2020"
+output: html_document
+---
+## Question 1
+Convert this table to a .csv format  
+```
+First String    Second      1.22      3.4
+Second          More Text   1.555555  2.2220
+Third           x           3         124
+```
+
+```
+FIND: \t+
+REPLACE: ,
+```
+```\t+``` is finding one or more tabs, and replacing the tabs with a comma  
+
+## Question 2
+Convert this:  
+```
+Ballif, Bryan, University of Vermont
+Ellison, Aaron, Harvard Forest
+Record, Sydne, Bryn Mawr
+```
+To this:  
+```
+Bryan Ballif (University of Vermont)
+Aaron Ellison (Harvard Forest)
+Sydne Record (Bryn Mawr)
+```
+
+```
+FIND: (\w+),\s+(\w+),\s+(\w+\s+.*)
+REPLACE: \2 \1 (\3)
+```
+```(\w+)``` is finding the first word to the comma and capturing it. Then ```\s+``` finding the space and second word ```(\w+)``` (captured) to the comma, etc, until the end of the find code, where I used a ```.*``` to capture "all the rest" of the string.  
+
+## Question 3
+Change this string of song titles:  
+```
+0001 Georgia Horseshoe.mp3 0002 Billy In The Lowground.mp3 0003 Cherokee Shuffle.mp3 0004 Walking Cane.mp3
+```
+To look like this:  
+```
+0001 Georgia Horseshoe.mp3
+0002 Billy In The Lowground.mp3
+0003 Cherokee Shuffle.mp3
+0004 Walking Cane.mp3
+```
+
+```
+FIND: (\d+\s+\w+\s\w+.*)\s+(\d+\s\w+\s\w+\s\w+\s\w+.*)\s(\d+\s\w+\s\w+.*)\s(\d+\s\w+\s\w+.*)
+REPLACE: \1\n\2\n\3\n\4
+```
+This regular expressions code is individually capturing each song title separated by a space, where ```\d+``` is used to designate the decimal, and I used ```\n``` to create line breaks in the replace.  
+
+## Question 4
+Take the song titles broken by a line break from Question 3, and format them to look like this:  
+```
+Georgia Horseshoe_0001.mp3
+Billy In The Lowground_0002.mp3
+Cherokee Shuffle_0003.mp3
+Walking Cane_0004.mp3
+```
+
+```
+FIND: (\d{4})\s(.+)(.mp3)
+REPLACE: \2_\1\3
+```
+I captured the 4 decimals at the beginning of the string with ```(\d{4})```, the song title words using ```.+```, and the .mp3 separately. The ```.+``` designated any character until the next regular expression/character in find.  
+
+## Question 5
+Rearrange this data set:  
+```
+Camponotus,pennsylvanicus,10.2,44
+Camponotus,herculeanus,10.5,3
+Myrmica,punctiventris,12.2,4
+Lasius,neoniger,3.3,55
+```
+To this format:  
+```
+C_pennsylvanicus,44
+C_herculeanus,3
+M_punctiventris,4
+L_neoniger,55
+```
+
+```
+FIND: (\w)\w+,(\w+),.+,(\d+)
+REPLACE: \1_\2,\3
+```
+```(\w)``` captures just the first character of the genus, and then the rest of the genus characters are designated to the comma ```\w+,```. The whole species string of characters in designated to the comma by ```(\w+),``` without capturing the comma. ```.+,``` is used to designate the first set of digits, but doesn't need to be captured because we don't need to keep it. ```(\d+)``` is used to find the second digit.  
+
+## Question 6
+Take the original data set from Question 5 and format it to look like this:  
+```
+C_penn,44
+C_herc,3
+M_punc,4
+L_neon,55
+```
+
+```
+FIND: (\w)\w+,(\w{4})\w+,.+,(\d+)
+REPLACE: \1_\2,\3
+```
+This regular expression is very similar to the above, but I used ```(\w{4})``` to capture the first 4 characters of the species name, with ```\w+``` after it to designate the rest of the species name.  
+
+## Question 7
+Using the original data set from Question 5, rearrange the data so the first 3 characters of both the genus and species name are combined, and switch the order of the digits, like this:  
+```
+Campen, 44, 10.2
+Camher, 3, 10.5
+Myrpun, 4, 12.2
+Lasneo, 55, 3.3
+```
+
+```
+FIND: (\w{3})\w+,(\w{3})\w+,(.+),(\d+)
+REPLACE: \1\2, \4, \3
+```
+I used ```(\w{3})``` to capture the first 3 characters of both the genus and species names, and captured the first set of digits with ```(.+)```.   

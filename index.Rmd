@@ -11,7 +11,8 @@ output:
 * [Typora Homework 1.15.2020 html](Homework1_Typora.html)
 * [Typora Homework 1.15.2020 PDF](Homework 1_Typora_1.15.20.pdf)
 
-
+## Homework 3
+* [Homework 3: Regular Expressions 1.29.2020 html](Homework3.html) 
 
 
 
