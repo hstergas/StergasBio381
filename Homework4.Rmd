@@ -1,0 +1,136 @@
+---
+title: "Homework 4"
+author: "Helaina Stergas"
+date: "2/5/2020"
+output: html_document
+---
+## Question 1   
+Suppose x = 1.1, a = 2.2, and b = 3.3. Assign each expression to the value of the variable z and print the value stored in z.   
+
+a.
+```{r}
+# first specify x, a, b
+x <- 1.1
+a <- 2.2
+b <- 3.3
+
+z <- x^a^b # make z the first equation
+print(z)
+```
+
+b.
+```{r}
+z <- (x^a)^b 
+print(z)
+```
+
+c.
+```{r}
+z <- 3*x^3 + 2*x^2 + 1
+print(z)
+```
+
+## Question 2   
+Using the rep and seq functions, create the following vectors:   
+a. (1,2,3,4,5,6,7,8,7,6,5,4,3,2,1)   
+```{r}
+# seq generates sequences. "from" is the beginning of the sequence, "to" specifies the end of the sequence, "by" gives the function te interval of the sequence. Note: watch the +/- sign for by. 
+z <- c(seq(from = 1, to = 8, by = 1), seq(from = 7, to = 1, by = -1))
+print(z)
+```
+
+b. (1,2,2,3,3,3,4,4,4,4,5,5,5,5,5)    
+```{r}
+# "rep" generates numbered repeats. The first value is the character that you wanted repeated, the second value is the number of repeats.
+z <- c( 1, rep(2,2), rep(3,3), rep(4,4), rep(5,5))
+print(z)
+```
+
+c. (5,4,4,3,3,3,2,2,2,2,1,1,1,1,1)   
+```{r}
+z <- c( 5, rep(4,2), rep(3,3), rep(2,4), rep(1,5))
+print(z)
+```
+
+## Question 3   
+Create a vector of two random uniform numbers. In a spatial map, these can be interpreted as x and y coordinates that give the location of an individual (such as a marked forest tree in a plot that has been mapped). Using one of R’s inverse trigonometry functions (asin(), acos(), or atan()), convert these numbers into polar coordinates (If you don’t know what polar coordinates are, read about them on the web or in your calculus textbook).   
+
+```{r}
+x <- runif(1) #creating a random uniform number x
+print(x)
+y <- runif(1) #creating a random uniform number y
+print(y)
+z <- c(x, y) #creating a vector (x,y) coordinates
+print(z)
+```
+```{r}
+# generating polar coordinates from (x,y)
+r <- sqrt(x^2 + y^2) # sqrt = square root, creating the r value of polar coordinate of (x,y)
+print (r)
+t <- atan(y/x) # using inverse trig "atan" function to generate theta of polar coordinate of (x,y)
+print(t)
+
+p <- c(r,t) # generating a vector of (x,y) polar coordinate
+print(p)
+```
+
+## Question 4   
+Suppose that queue <- c("sheep", "fox", "owl", "ant") and that queue represents the animals that are lined up to enter Noah’s Ark, with the sheep at the front of the line. Using R expressions, update the queue successively as   
+
+```{r}
+queue <- c("sheep", "fox", "owl", "ant") #setting up original vector
+```
+
+a. the serpent arrives;   
+```{r}
+queue1 <- c(queue, "serpent") # adding serpent to the end of the vector
+print(queue1)
+```
+ b. the sheep enters the ark;   
+```{r}
+queue2 <- queue1[-1] # removing sheep (position 1 in vector) from the vector by using "-" and the position of sheep in the vector. The square brakets signify which value in the vector you are referring to.
+print(queue2)
+```
+ c. the donkey arrives and talks his way to the front of the line;   
+```{r}
+queue3 <- c("donkey", queue2) # adding donkey to the beginning of the new vector including the queue2 vector.
+print(queue3)
+```
+ d. the serpent gets impatient and leaves;   
+```{r}
+queue4 <- queue3[-5] #removing serpent the same way as "b"
+print(queue4)
+```
+ e. the owl gets bored and leaves;   
+```{r}
+queue5 <- queue4[-3] #removing owl same as "b"
+print(queue5)
+```
+ f. the aphid arrives and the ant invites him to cut in line.   
+```{r}
+?append # looking up append function - append allows you to add elements to a vector, into a specified position in the vector
+queue6 <- append(queue5, "aphid", after = 2) # using append to add aphid to the vector queue5. The "after = 2" adds the "aphid" after the 2nd element in the vector. 
+print(queue6)
+```
+ g. Finally, determine the position of the aphid in the line.   
+```{r}
+?which # looking up how the function which works...which is a way to find out what indices are TRUE
+which(queue6 == "aphid") # asking which element in the vector queue6 is aphid
+```
+
+## Question 5        
+ Use R to create a vector of all of the integers from 1 to 100 that are not divisible by 2, 3, or 7.   
+ Hint: look up what %% does...   
+```{r}
+?"%%" # looking up %% function - gives you the remainder for a division, ex. 9 %% 3 = 0 but 10 %% 3 = 1, because 9 is divisible by 3, but 10 is not (and has a remainder of 1). 
+```
+ 
+```{r}
+v <- c(seq(from = 1, to = 100, by = 1)) # creating our 1-100 vector
+print(v) 
+
+# we want to include all of the elements of the vector that are not divisible by 2, 3, and 7. This means we don't want the elements that are "0" when we use %% to find the remainders.
+v1 <- v[(v %% 2  != 0) & (v %% 3 != 0) & (v %% 7 != 0)] # the "v %% 2" gives us all the remainders when all elements in v are divided by 2. The !=0 function says, "don't include any values from "v %% 2" that are equal to 0. The & allows you to add multiple of these commands together. 
+print(v1)
+```
+ 
