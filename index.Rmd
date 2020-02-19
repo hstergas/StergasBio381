@@ -20,6 +20,8 @@ output:
 ## Homework 5
 * [Homework 5: Working with matrices, lists, and data frames html](Homework5_2.12.2020.html) 
 
+## Homework 6
+* [Homework 6: Simulating and Fitting Data Distributions html](Homework6_2.19.2020.html)
 
 
 
