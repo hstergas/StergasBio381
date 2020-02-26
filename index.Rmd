@@ -12,16 +12,19 @@ output:
 * [Typora Homework 1.15.2020 PDF](Homework 1_Typora_1.15.20.pdf)
 
 ## Homework 3
-* [Homework 3: Regular Expressions 1.29.2020 html](Homework3.html) 
+* [Homework 3: Regular Expressions 1.29.2020](Homework3.html) 
 
 ## Homework 4
-* [Homework 4: Vectors 2.5.2020 html](Homework4.html) 
+* [Homework 4: Vectors 2.5.2020](Homework4.html) 
 
 ## Homework 5
-* [Homework 5: Working with matrices, lists, and data frames html](Homework5_2.12.2020.html) 
+* [Homework 5: Working with matrices, lists, and data frames](Homework5_2.12.2020.html) 
 
 ## Homework 6
-* [Homework 6: Simulating and Fitting Data Distributions html](Homework6_2.19.2020.html)
+* [Homework 6: Simulating and Fitting Data Distributions](Homework6_2.19.2020.html)
+
+## Homework 7
+* [Homework 7: Creating Fake Data Sets to Explore Hypotheses](Homework7.html)
 
 
 

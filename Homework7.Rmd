@@ -1,0 +1,126 @@
+---
+title: 'Homework 7: Creating Fake Data Sets to Explore Hypotheses'
+author: "Helaina Stergas"
+date: "2/26/2020"
+output: html_document
+---
+```{r}
+library(ggplot2)
+```
+
+### To start simply, assume that the data in each of your treatment groups follow a normal distribution. Specify the sample sizes, means, and variances for each group that would be reasonable if your hypothesis were true.   
+```{r}
+# I have a data set with two treatment groups for genotype (independent varaible) (Wildtype and Mutant), and a continuous variable for eye diameter normalized by body length measurement (dependent variable)
+# based on my data, I expect the mean on the WT genotype to be 0.085, and the mean for the Mutant genotype to be 0.075. Based on some initial analyses I've done for this data, I will assume the standard deviation to be 0.006, and equal between the two treatment groups. The sample size I expect to need to detect significance between these two groups is 30 individuals per genotype. 
+```
+### Using the methods we have covered in class, write code to create a random data set that has these attributes. Organize these data into a data frame or tibble with the appropriate structure.   
+```{r}
+# creating a data set based on a normal distribution using my parameters...
+WT <- rnorm(n=30,mean=0.085,sd=0.006)
+head(WT)
+Mutant <- rnorm(n=30,mean=0.075,sd=0.006)
+head(Mutant)
+
+mydataframe <- data.frame(WT,Mutant) # creating a data frame with my two treatments...
+str(mydataframe)
+head(mydataframe)
+
+```
+```{r}
+# this data frame is ok for just structuring the data, but in order to do ANOVA, we need to structure it so that the dependent variable (measurements data) is all in one column, and the treatment (genotype) is specified in another column
+library(tidyr)
+# the "gather" function (in tidyr) will turn "mydataframe" into a data frame formatted so that there are two columns - Genotype (Treatment or independent variable) and Diameter.Length (dependent variable) 
+# condenses the WT and Mutant measurements into one column for the dependent variable!
+long_frame <- gather(mydataframe,Genotype,Diameter.Length,
+                     WT:Mutant)
+print(long_frame)
+```
+### Now write code to analyze the data (probably as an ANOVA or regression analysis, but possibly as a logistic regression or contingency table analysis. Write code to generate a useful graph of the data.   
+```{r}
+# to analyze this data set, I will use ANOVA
+# using "aov" to run an anova analysis comparing "Diameter.Length" data between the two treatments of "Genotype", WT and Mutant. I asked the "aov" function to pull the data from the "long_frame" data frame.
+mymodel_ano <- aov(Diameter.Length~Genotype,data=long_frame)
+print(mymodel_ano)
+```
+```{r}
+# to get the really interesting data from the anova (not just the sum of squares and the degrees of freedom), I will use the "summary" function
+ano_sum <- summary(mymodel_ano) 
+print(ano_sum)
+```
+```{r}
+# generating a graph of the data...
+ano_plot <- ggplot(data=long_frame,
+                   aes(x=Genotype,
+                       y=Diameter.Length,
+                       fill=Genotype)) + geom_boxplot()
+# using ggplot to generate a boxplot (use "geom_boxplot()" to specify)
+# in the "aes" function in ggplot, specify the x variable, the y variable, and use "fill" to specify that the plot should be colored/split for the different treatments of "Genotype"
+print(ano_plot)
+```
+
+### Try running your analysis multiple times to get a feeling for how variable the results are with the same parameters, but different sets of random numbers.   
+```{r}
+# copying all of the code, and re-running it all again here...
+WT <- rnorm(n=30,mean=0.085,sd=0.006)
+Mutant <- rnorm(n=30,mean=0.075,sd=0.006)
+mydataframe <- data.frame(WT,Mutant)
+long_frame <- gather(mydataframe,Genotype,Diameter.Length,
+                     WT:Mutant)
+print(long_frame)
+```
+
+```{r}
+mymodel_ano <- aov(Diameter.Length~Genotype,data=long_frame)
+ano_sum <- summary(mymodel_ano) 
+print(ano_sum)
+ano_plot <- ggplot(data=long_frame,
+                   aes(x=Genotype,
+                       y=Diameter.Length,
+                       fill=Genotype)) + geom_boxplot()
+print(ano_plot)
+```
+The ANOVA really doesn't change much, even with a new set of random values. The result is still that WT and Mutant treatment groups are extremely significantly different (***).     
+
+### Now begin adjusting the means of the different groups. Given the sample sizes you have chosen, how small can the differences between the groups be (the “effect size”) for you to still detect a significant pattern (p < 0.05)?   
+```{r}
+# changing the means of the treatment groups - new mean of Mutant now 0.080
+WT1 <- rnorm(n=30,mean=0.085,sd=0.006)
+Mutant1 <- rnorm(n=30,mean=0.080,sd=0.006)
+mydataframe1 <- data.frame(WT1,Mutant1)
+long_frame1 <- gather(mydataframe1,Genotype,Diameter.Length,
+                     WT1:Mutant1)
+print(long_frame1)
+```
+```{r}
+mymodel_ano1 <- aov(Diameter.Length~Genotype,data=long_frame1)
+ano_sum1 <- summary(mymodel_ano1) 
+print(ano_sum1)
+```
+We still get a significant p value here, let's make the effect size even smaller...   
+
+```{r}
+WT2 <- rnorm(n=30,mean=0.085,sd=0.006)
+Mutant2 <- rnorm(n=30,mean=0.0824,sd=0.006)
+mydataframe2 <- data.frame(WT2,Mutant2)
+long_frame2 <- gather(mydataframe2,Genotype,Diameter.Length,
+                     WT2:Mutant2)
+mymodel_ano2 <- aov(Diameter.Length~Genotype,data=long_frame2)
+ano_sum2 <- summary(mymodel_ano2) 
+print(ano_sum2)
+```
+Between the "Mutant" mean value of 0.0824 and 0.0825, with Wildtype mean value of 0.085, is where we start to lose a significant difference between the groups. So our effect size, or distance between the means of the two treatment groups, is about 0.0025.       
+
+### Alternatively, for the effect sizes you originally hypothesized, what is the minimum sample size you would need in order to detect a statistically significant effect? Again, run the model a few times with the same parameter set to get a feeling for the effect of random variation in the data.       
+```{r}
+# changing the sample size (n) for each treatment group
+WT3 <- rnorm(n=6,mean=0.085,sd=0.006)
+Mutant3 <- rnorm(n=6,mean=0.075,sd=0.006)
+mydataframe3 <- data.frame(WT3,Mutant3)
+long_frame3 <- gather(mydataframe3,Genotype,Diameter.Length,
+                     WT3:Mutant3)
+mymodel_ano3 <- aov(Diameter.Length~Genotype,data=long_frame3)
+ano_sum3 <- summary(mymodel_ano3) 
+print(ano_sum3)
+```
+A sample size of 6 individuals per genotype is the cut off for significance!    
+
