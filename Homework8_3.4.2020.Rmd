@@ -1,0 +1,85 @@
+---
+title: 'Homework 8: Data Manipulations using the dplyr package'
+author: "Helaina Stergas"
+date: "3/4/2020"
+output: html_document
+---
+```{r}
+# openning dplyr library
+library(dplyr)
+```
+
+# Examine the structure of the iris dataset. How many observations and variables are in the dataset?   
+```{r}
+# iris is a data set in R
+data(iris)
+class(iris) # iris is a data frame
+glimpse(iris) # using "glimpse" to view structure in dplyr package instead of "str()" in base R
+```
+"iris" has 150 observations with 5 variables.
+
+# Create a new data frame iris1 that contains only the species virginica and versicolor with sepal lengths longer than 6 cm and sepal widths longer than 2.5 cm. How many observations and variables are in the dataset?    
+```{r}
+anyNA(iris) # checking to see if there are any NAs to worry about in iris
+```
+```{r}
+iris1 <- filter(iris, Species %in% c("virginica", "versicolor"), Sepal.Length > 6, Sepal.Width > 2.5) 
+# using "filter" to generate a new data set with only the 2 species, and with the specific sepal lengths and widths
+# %in% allows you to include two different species (using a concatinated list of species names to choose)
+# could have used "Species == c("virginica","versicolor")" instead of %in%
+glimpse(iris1)
+```
+After filtering by species and sepal length and width, there are 56 observations and 5 variables in iris1.
+
+# Now, create a iris2 data frame from iris1 that contains only the columns for Species, Sepal.Length, and Sepal.Width. How many observations and variables are in the dataset?     
+```{r}
+iris2 <- select(iris1, Species, Sepal.Length, Sepal.Width)
+glimpse(iris2) # use the "select" function to generate the new data set iris2 with only the Species, Sepal.Length, and Sepal.Width variables
+```
+"iris2" contains 56 observations and 3 variables.
+
+# Create an iris3 data frame from iris2 that orders the observations from largest to smallest sepal length. Show the first 6 rows of this dataset.     
+```{r}
+iris3 <- arrange(iris2, desc(Sepal.Length)) # use arrange to order iris2 by descending length (use "desc")
+glimpse(iris3[1:6,]) # to show only rows 1-6, must glimpse iris[1:6,] - reminder, [rows,columns] when specifying variables in a data set
+```
+Showing only 6 rows/observations of the 3 variables.
+
+# Create an iris4 data frame from iris3 that creates a column with a sepal area (length * width) value for each observation. How many observations and variables are in the dataset?      
+```{r}
+# use "mutate" to create a new variable from existing variables
+iris4 <- mutate(iris3, Sepal.Area = Sepal.Length*Sepal.Width)
+glimpse(iris4)
+```
+"iris4" has 56 observations and 4 variables (including the new "Sepal.Area" variable). 
+
+# Create iris5 that calculates the average sepal length, the average sepal width, and the sample size of the entire iris4 data frame and print iris5.     
+```{r}
+# use "summarize" to genrate a data set with the mean values, and use "n()" to find the sample size of the entire data set iris4
+iris5 <- summarize(iris4, avgSepalLength = mean(Sepal.Length), avgSepalWidth = mean(Sepal.Width), SampleSize = n())
+print(iris5)
+```
+
+# Finally, create iris6 that calculates the average sepal length, the average sepal width, and the sample size for each species of in the iris4 data frame and print iris6.   
+```{r}
+# use "group_by" function within "summarize" to first specify that we are grouping iris4 by Species. The summarize function will then use the grouped data set to calculate the means and sample size of each group (Species). 
+iris6 <- summarize(group_by(iris4, Species), avgSepalLength = mean(Sepal.Length), avgSepalWidth = mean(Sepal.Width), SampleSize = n())
+print(iris6)
+```
+
+# In these exercises, you have successively modified different versions of the data frame iris1 iris2 iris3 iris4 iris5 iris6. At each stage, the output data frame from one operation serves as the input fro the next.   
+# A more efficient way to do this is to use the pipe operator %>% from the tidyr package. See if you can rework all of your previous statements into an extended piping operation that uses iris as the input and generates iris6 as the output.    
+```{r}
+# piping all of my operations into one code
+# dont include data set in each command; with piping there is no need to, the point is that we are passing output from one command directly into the next
+iris6 <- iris %>%
+  filter(Species %in% c("virginica", "versicolor"), Sepal.Length > 6, Sepal.Width > 2.5) %>%
+  select(Species, Sepal.Length, Sepal.Width) %>%
+  arrange(desc(Sepal.Length)) %>%
+  mutate(Sepal.Area = Sepal.Length*Sepal.Width) %>%
+  group_by(Species) %>%
+  summarize(avgSepalLength = mean(Sepal.Length), avgSepalWidth = mean(Sepal.Width), SampleSize = n())
+  
+print(iris6)
+```
+It works!

@@ -1,7 +1,7 @@
 ---
 title: "Bio381 Homework"
 author: "Helaina Stergas"
-date: "1/22/2020"
+date: "Spring 2020"
 output: 
   prettydoc::html_pretty:
     theme: cayman
@@ -25,6 +25,9 @@ output:
 
 ## Homework 7
 * [Homework 7: Creating Fake Data Sets to Explore Hypotheses](Homework7.html)
+
+## Homework 8
+* [Homework 8: Data manipulations using the dplyr package](Homework8_3.4.2020)
 
 
 
