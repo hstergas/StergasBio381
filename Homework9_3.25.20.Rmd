@@ -1,0 +1,156 @@
+---
+title: "Homework 9: Organizing Code With Structured Programming"
+author: "Helaina Stergas"
+date: "3/25/2020"
+output: html_document
+---
+
+## Organize the code used in [Homework 7](Homework7.html) with structured programming
+
+# Use pseudocode:
+get_data()   
+calculate_stuff()   
+summarize_output()   
+graph_results()   
+
+```{r}
+# Load Libraries ------------------------------------------
+library(ggplot2)
+library(tidyr)
+
+# Global Variables ------------------------------------------
+# data_a = WT, data_b = Mutant
+WT <- rnorm(n=30,mean=0.085,sd=0.006)
+Mutant <- rnorm(n=30,mean=0.075,sd=0.006)
+
+# var_a = Genotype, var_b = Diameter.Length... in new data frame created with "get_data"
+
+# -------------------------------
+# FUNCTION get_data
+# description: generate data frame in correct orientation
+# inputs: numberic variables normally distributed, in vector form 
+# outputs: data frame
+##################################
+get_data <- function(data_a=runif(10),
+                     data_b=runif(10)) {
+    short_frame <- data.frame(data_a,data_b)
+    df <- gather(short_frame,var_a,
+               var_b,data_a:data_b)
+
+return(df)
+
+} # end of get_data
+#---------------------------------
+# -------------------------------
+# FUNCTION calculate_ANOVA
+# description: run ANOVA model on data
+# inputs: normally distributed variables of numeric
+# outputs: ANOVA model
+##################################
+calculate_ANOVA <- function(var_a=runif(10),
+                            var_b=runif(10)) {
+myANOVA <- aov(var_b~var_a)
+
+return(myANOVA)
+
+} # end of calculate_ANOVA
+#---------------------------------
+# -------------------------------
+# FUNCTION summarize_ANOVA
+# description: generate summary of ANOVA
+# inputs: ANOVA model
+# outputs: summary table of ANOVA
+##################################
+summarize_ANOVA <- function(z=NULL) {
+  if(is.null(z)) {
+    z <- summary(lm(runif(10)~runif(10)))
+  } 
+ano_sum <- summary(z)
+
+return(ano_sum)
+
+} # end of summarize_ANOVA
+#---------------------------------
+# -------------------------------
+# FUNCTION graph_normal
+# description: plotting data
+# inputs: data frame with variables of numeric
+# outputs: box plot
+##################################
+graph_normal <- function(var_a=runif(10),
+                         var_b=runif(10)) {
+  ano_plot <- ggplot(data=temp1,
+                   aes(x=var_a,
+                       y=var_b,
+                       fill=var_a)) + geom_boxplot()
+print(ano_plot)
+message("Message: BoxPlot created for ANOVA!")
+
+} # end of graph_normal
+#---------------------------------
+
+##########################################
+# Program body ------------------------------------------
+
+# creating data frame with WT and Mutant normally distributed diameter measurements
+temp1 <- get_data(data_a=WT,data_b=Mutant)
+# print(temp1)
+
+# fit ANOVA model to data
+temp2 <- calculate_ANOVA(var_a=temp1$var_a, 
+                         var_b=temp1$var_b)
+print(temp2)
+# summarize ANOVA model
+temp3 <- summarize_ANOVA(z=temp2)
+
+# create graph of ANOVA data
+graph_normal(var_a=var_a, var_b=var_b)
+# note: used temp1 (df) as "data" in ggplot function
+
+# show summary of ANOVA
+print(temp3)
+```
+# Now, using the created functions and data, modifying the existing program to record a new summary variable: p-value
+```{r}
+# -------------------------------
+# FUNCTION pull_p.value
+# description: pull p-value element(s) from the summary ANOVA
+# inputs: summary of ANOVA model
+# outputs: vector of p-value(s)
+##################################
+pull_p.value <- function(z=NULL) {
+  if(is.null(z)) {
+    z <- summary(lm(runif(10)~runif(10)))
+  } 
+sum_unlist <- unlist(z)
+return(sum_unlist["Pr(>F)1"])
+
+} # end of pull_p.value
+#---------------------------------
+# Program body ------------------------------------------
+
+# creating data frame with WT and Mutant normally distributed diameter measurements
+temp1 <- get_data(data_a=WT,data_b=Mutant)
+# print(temp1)
+
+# fit ANOVA model to data
+temp2 <- calculate_ANOVA(var_a=temp1$var_a, 
+                         var_b=temp1$var_b)
+
+# summarize ANOVA model
+temp3 <- summarize_ANOVA(z=temp2)
+
+# pull p-value from summary
+temp4 <- pull_p.value(z=temp3)
+
+# create graph of ANOVA data
+graph_normal(var_a=var_a, var_b=var_b)
+# note: used temp1 (df) as "data" in ggplot function
+
+# show summary of ANOVA
+print(temp3)
+# show p-value
+print(temp4)
+```
+
+

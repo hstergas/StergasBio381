@@ -29,5 +29,6 @@ output:
 ## Homework 8
 * [Homework 8: Data manipulations using the dplyr package](Homework8_3.4.2020)
 
-
+## Homework 9
+* [Homework 9: Organizing code with structured programming](Homework9_3.25.20)
 
