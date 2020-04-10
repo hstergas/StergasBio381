@@ -1,0 +1,251 @@
+---
+title: 'Homework 10: For Loops and Randomization Tests'
+author: "Helaina Stergas"
+date: "4/3/2020"
+output: html_document
+---
+
+### Question 1    
+Using a for loop, write a function to calculate the number of zeroes in a numeric vector. Before entering the loop, set up a counter variable counter <- 0. Inside the loop, add 1 to counter each time you have a zero in the matrix. Finally, use return(counter) for the output.    
+```{r}
+# first, must create the function to count the number of zeros
+
+# -------------------------------
+# FUNCTION find_zeros
+# description: count zeros in a matrix
+# inputs: matrix of nrow and ncol, numeric
+# outputs: counter vector containing number of zeros
+##################################
+find_zeros <- function(m=NULL) {
+  if(is.null(m)) {
+   m_vec <- rep(c(0,1),10)
+   m_vec <- sample(m_vec)
+   m <- matrix(m_vec,nrow=4) }
+
+counter <- 0
+for (i in 1:nrow(m)) { # start of row loop
+  for (j in 1:ncol(m)) { # start of column loop
+    if(m[i,j] == 0){
+      counter <- counter + 1 }
+  } # end column loop
+} # end row loop
+
+return(counter)
+
+} # end of find_zeros
+#---------------------------------
+find_zeros()
+
+```
+"find_zeros" works really well!
+
+### Question 2    
+Use subsetting instead of a loop to rewrite the function as a single line of code.
+```{r}
+# setting up the test matrix
+m_vec <- rep(c(0,1),10)
+m_vec <- sample(m_vec)
+m <- matrix(m_vec,nrow=4)
+
+counter <- sum(m[,]==0) 
+# adding up all elements in the matrix (subsetting using [,] to get elements in all rows and columns) that are equal to 0
+print(counter)
+```
+
+### Question 3    
+Write a function that takes as input two integers representing the number of rows and columns in a matrix. The output is a matrix of these dimensions in which each element is the product of the row number x the column number.
+```{r}
+# -------------------------------
+# FUNCTION multiply_row_col
+# description: creates a matrix that will multiply the row and column number of an element to generate the element
+# inputs: intergers of row number (n) and column number (m)
+# outputs: matrix (M) with n rows and m columns
+##################################
+multiply_row_col <- function(n=4,m=5) {
+M <- matrix(NA, nrow=n, ncol=m)
+for (i in 1:nrow(M)) { # start of row loop
+  for(j in 1:ncol(M)) { # start of column loop
+    M[i,j] <- i*j
+  } # end of column loop
+} # end of row loop
+
+return(M)
+
+} # end of multiply_row_col
+#---------------------------------
+multiply_row_col()
+
+# multiplying each variable i (which also corresponds to the row number) by each variable j (corresponds to the row number)
+```
+
+### Question 4     
+Use the code from the upcoming April 2nd lecture (Randomization Tests) to design and conduct a randomization test for some of your own data. You will need to modify the functions that read in the data, calculate the metric, and randomize the data. Once those are set up, the program should run correctly calling your new functions. Also, to make your analysis fully repeatable, make sure you set the random number seed at the beginning (use either set.seed() in base R, or char2seed in the TeachingDemos package
+```{r}
+# Preliminaries ------------------------------------------
+library(ggplot2)
+library(TeachingDemos)
+library(tidyverse)
+
+# setting seed
+char2seed("zebrafish retina")
+
+# Build Functions ------------------------------------------
+# -------------------------------
+# FUNCTION read_data
+# description: read in (or generate) data set for analysis
+# inputs: file name (or nothing, as in this demo)
+# outputs: 3 column data frame of observed data (ID, x, y)
+##################################
+read_data <- function(z=NULL) {
+  if(is.null(z)) {
+    trt <- c(rep("trt1", 10), rep("trt2",10))
+    var1_obs <- rnorm(20)
+    df <- data.frame(ID=seq_along(var1_obs),
+                     trt,
+                     var1_obs) } 
+df <- read.table(file=z,
+                 header=TRUE,
+                 sep=",",
+                 stringsAsFactors=FALSE)
+  return(df)
+} # end of read_data
+#---------------------------------
+# read_data()
+
+# must complete this for my data set ("data") to move on to next function
+# df %>% rename(ID=ID, trt=Genotype,     var1_obs=EyeDiam.BodyLength)
+
+# -------------------------------
+# FUNCTION get_metric
+# description: calculate metric for randomization test
+# inputs: 2-column data frame for treatment mean analysis
+# outputs: difference in treatment means (that's the metric X)
+##################################
+get_metric <- function(z=NULL) {
+  if(is.null(z)) {
+    trt <- c(rep("trt1", 10), rep("trt2",10))
+    var1_obs <- rnorm(20)
+    z <- data.frame(ID=seq_along(var1_obs),
+                     trt,
+                     var1_obs) } 
+ meanVar1_obs <- z %>% 
+   group_by(trt) %>%
+   summarize(meanVar1=mean(var1_obs)) 
+# using dyplr functions to group the data by trt, and then using  summarize to find the means of each group. I piped these functions together. 
+# use "z" as the data input, not "df". "df" is the actual name of our data frame, where "z" is the data input for the function, they should be two different things!
+  X_obs <- meanVar1_obs[2,2] - meanVar1_obs[1,2]
+# creating the metric "X" by subtracting the means from eachother
+  return(as.numeric(X_obs)) # return "as.numeric" to get just the X_obs value, not the associated data frame
+  
+} # end of get_metric
+#---------------------------------
+# get_metric() 
+
+# -------------------------------
+# FUNCTION shuffle_data
+# description: randomize data for regression analysis
+# inputs: 3 column data frame (ID, xvar, yvar)
+# outputs: 3 column data frame (ID, xvar. yvar)
+##################################
+shuffle_data <- function(z=NULL) {
+  if(is.null(z)) {
+    trt <- c(rep("trt1", 10), rep("trt2",10))
+    var1_obs <- rnorm(20)
+    z <- data.frame(ID=seq_along(var1_obs),
+                     trt,
+                     var1_obs) }
+  z$var1_obs <- sample(z$var1_obs) # this will reshuffle the var1 values, uncouple them from the trt
+  # use "z" in the call, not "df"!!! 
+  return(z)
+  
+} # end of shuffle_data
+#---------------------------------
+# shuffle_data() 
+
+# -------------------------------
+# FUNCTION get_pval
+# description: calculate p value from simulation
+# inputs: list of observed metric and vector of simulated metrics
+# outputs: lower and upper tail probability value
+##################################
+get_pval <- function(z=NULL) {
+  if(is.null(z)){
+    z <- list(rnorm(1), rnorm(1000)) }
+  p_lower <- mean(z[[2]] <= z[[1]])
+  # double bracket will allow us to pull out the         values for the element of the list
+  # setting up a conditional and doing math on it
+  # answers what is the proportion of the simulated mean         value that is less than the observed mean?
+  p_upper <- mean(z[[2]] >= z[[1]])
+  
+  
+  return(c(pL=p_lower, pU=p_upper))
+  
+} # end of get_pval
+#---------------------------------
+# get_pval() # p_values must add up to 1.0
+
+# -------------------------------
+# FUNCTION plot_ran_test
+# description: create a ggplot of histogram of simulated values
+# inputs: list of observed metric and vector simulated metrics
+# outputs: saved ggplot graph
+##################################
+plot_ran_test <- function(z=NULL) {
+  if(is.null(z)) {
+    z <- list(rnorm(1),rnorm(1000))}
+  df <- data.frame(ID=seq_along(z[[2]]), sim_x=z[[2]])
+  p1 <- ggplot(data=df, mapping=aes(x=sim_x))
+  p1 + geom_histogram(mapping=aes(fill=I("goldenrod"),
+                                  color=I("black"))) +
+    geom_vline(aes(xintercept=z[[1]],col="blue"))
+  # dont need a "print(p1)" statement, it will only print the background of the plot!
+} # end of plot_ran_test
+#---------------------------------
+# plot_ran_test()
+```
+
+Now, running the Randomization Test for my eye size data (eye diameter normalized to body length) for two different genotypes (CCLL (WT) and ccll (mutant)). 
+```{r}
+# global variables
+data <- "SampleData.csv"
+n_sim <- 1000 # number of simulated data sets
+x_sim <- rep(NA,n_sim) # set up empty vector for simulated differences in means
+
+# reading in the data
+df <- read_data(z=data)
+
+# renaming columns in the data set
+df <- df %>% rename(ID=ID, trt=Genotype, var1_obs=EyeDiam.BodyLength)
+
+# getting metric for Randomization Test
+x_obs <- get_metric(z=df)
+
+# Shuffling the data 
+for (i in seq_len(n_sim)) {
+  x_sim[i] <- get_metric(shuffle_data(z=df))
+} 
+
+# getting metrics from observed and simulated data
+metrics <- list(x_obs,x_sim) 
+
+# getting the p_values (upper is the p_value that says that our observed are significant)
+get_pval(metrics) 
+
+# plotting the metrics of observed and simulated 
+plot_ran_test(metrics) 
+```
+The simulated metric values (as depicted by the histogram) and the observed metric value (blue line on the graph) are actually very different. Along with the calculated p-value from this randomization test (p upper = 0.002, which is less than 0.05), this suggests that the two treatments do differ significantly in means of var1, more than just by chance. 
+
+### Question 5      
+For comparison, calculate in R the standard statistical analysis you would use with these data. How does the p-value compare for the standard test versus the p value you estimated from your randomization test? If the p values seem very different, run the program again with a different starting seed (and/or increase the number of replications in your randomization test). If there are persistent differences in the p value of the standard test versus your randomization, what do you think is responsible for this difference?
+```{r}
+# re-setting the data set (df) back to the observed data, and renaming the columns 
+df <- read_data(z=data)
+df <- df %>% rename(ID=ID, trt=Genotype, var1_obs=EyeDiam.BodyLength)
+
+# running an ANOVA on the data (var1_obs) against the treatments (trt)
+anova <- aov(df$var1_obs ~ df$trt, data=df)
+# printing the summary statistics of the ANOVA results
+print(summary(anova))
+```
+The p-value calculated from the ANOVA is 0.0027, which suggests that the difference between the means of var1 based on treatment is significant. This is extremely similar to the findings from the randomization test (p-value = 0.002), which suggests that the randomization test is a great way to calculate statistical difference for my data! 

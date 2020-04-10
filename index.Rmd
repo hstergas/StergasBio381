@@ -32,3 +32,7 @@ output:
 ## Homework 9
 * [Homework 9: Organizing code with structured programming](Homework9_3.25.20)
 
+## Homework 10
+* [Homework 10: For Loops and Randomization Tests](Homework10_4.3.2020.html)
+
+
