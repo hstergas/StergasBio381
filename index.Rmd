@@ -35,4 +35,8 @@ output:
 ## Homework 10
 * [Homework 10: For Loops and Randomization Tests](Homework10_4.3.2020.html)
 
+## Homework 11
+* [Homework 11: Batch Processing](Homework11_4.15.2020)
+* [ANOVA Results Output File](ANOVAsummary1.csv)
+
 

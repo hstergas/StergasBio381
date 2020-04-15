@@ -1,0 +1,109 @@
+---
+title: "Homework 11: Batch Processing"
+author: "Helaina Stergas"
+date: "4/15/2020"
+output: html_document
+---
+
+### Repeat the exercise from the Batch Processing Lecture (7th April), but do it using real data sets rather than purely simulated. Check with folks in your lab to see if there are multiple data sets available for analysis. Stick to simple data analyses and graphics, but try to set it up as a batch process that will work on multiple files and save summary results to a common file.    
+Using eye diameter data collected for multiple genotypes of 72 hpf embryos. The eye diameter measurements have already been normalized to body length, and all meausurements are completed in micrometers. 
+Using Batch Processing of the 3 data sets, I will run ANOVA analyses between wildtype (WT or CCLL) and mutant (ccLL, CCll, and ccll) genotypes, and generate a results file containing p-values and standard deviations. 
+
+First, creating a function to provide ANOVA p-values
+```{r}
+# -------------------------------
+# FUNCTION ANOVA_stats
+# description: calculate ANOVA and extract p-value
+# inputs: 3-column data frame: ID, Trt, Var1
+# outputs: p-value
+##################################
+ANOVA_stats <- function(d=NULL) {
+  if(is.null(d)) {
+    ID <- 1:20
+    trt <- c(rep("WT",10),rep("Mut",10))
+    var1 <- runif(20)
+    d <- data.frame(ID,trt,var1) }
+# calculating standard deviations for var1 based on treatment
+  my_sd <- d %>% 
+  group_by(trt) %>%
+  summarize(calc_sd=sd(var1))
+  my_sd <- unlist(my_sd)
+  my_sd <- as.numeric(my_sd)
+# generating ANOVA from d, using column # designations, so that if the columns are not labelled the same, it should still work
+. <- aov(d[,3]~d[,2], data=d)
+. <- summary(.)
+. <- unlist(.)
+stats_list <- list(.["Pr(>F)1"],my_sd[4],my_sd[3])
+# note: must look at the output of one of the calculations of sd to find out which column is the sd of which genotypes
+
+return(stats_list)
+
+} # end of ANOVA_stats
+#---------------------------------
+
+```
+
+Now, running batch processing program
+```{r}
+##########################################
+# Global Variables
+file_folder <- "NormEyeDiamData/"
+file_out <- "ANOVAsummary1.csv"
+##########################################
+# load libraries
+library(tidyverse)
+
+# creating directory for data files
+# dir.create(file_folder)
+# moved all data files to this folder
+
+# generating the "file_names" variable 
+file_names <- list.files(path=file_folder)
+
+# Create a data frame to hold summary file statistics
+ID <- seq_along(file_names)
+file_name <- file_names
+p_val <- rep(NA,length(file_names))
+Wt_sd <- rep(NA,length(file_names))
+Mut_sd <- rep(NA,length(file_names))
+
+stats_out <- data.frame(ID,file_name,p_val,Wt_sd, Mut_sd)
+
+# batch process by looping through individuals
+
+for (i in seq_along(file_names)) { # start for loop
+  # reading in data files from "file_folder"
+  data <- read.table(file=paste(file_folder,
+                                file_names[i],
+                                sep=""),
+                     sep=",",
+                     header=TRUE)
+  # running "ANOVA_stats" on each data set
+  . <- ANOVA_stats(data)
+  # filling "stats_out" data frame with unlisted elements of "."
+  stats_out[i,3:5] <- unlist(.) 
+} # end for loop
+
+# set up output file and incorporate time stamp and minimal metadata
+write.table(cat("#Summary stats for batch",
+                "processing of ANOVA models",
+                "\n",
+                "# timestamp: ", 
+                as.character(Sys.time()),
+                "\n",
+                file=file_out,
+                row.names="",
+                col.names="",
+                sep=""))
+
+# now add the data frame to "file_out"
+write.table(x=stats_out,
+            file=file_out,
+            row.names=FALSE,
+            col.names=TRUE,
+            sep=",",
+            append=TRUE)
+
+```
+
+
