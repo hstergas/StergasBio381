@@ -41,5 +41,5 @@ output:
 
 ## Homework 12
 * [Homework 12: Advanced ggplotting](Homework12_4.15.2020)
-* [Finished plot](EyeSizeData_4genotypes)
+* [Finished plot](EyeSizeData_4genotypes.jpeg)
 

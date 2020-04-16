@@ -121,7 +121,7 @@ print(p4)
 I like this plot, so I'm going to save it using "ggsave" as a "tiff" file (that's what we use in our lab):
 ```{r}
 ggsave(plot=p4,
-       filename="EyeSizeData_4genotypes",
+       filename="EyeSizeData_4genotypes.tiff",
        width=6,
        height=6,
        units="in",
@@ -129,3 +129,15 @@ ggsave(plot=p4,
 ```
 
 This plot looks great, and is publication quality! 
+
+Saving this plot as a jpeg too!
+```{r}
+ggsave(plot=p4,
+       filename="EyeSizeData_4genotypes.jpeg",
+       width=6,
+       height=6,
+       units="in",
+       device="jpeg")
+```
+
+
