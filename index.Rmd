@@ -39,4 +39,7 @@ output:
 * [Homework 11: Batch Processing](Homework11_4.15.2020)
 * [ANOVA Results Output File](ANOVAsummary1.csv)
 
+## Homework 12
+* [Homework 12: Advanced ggplotting](Homework12_4.15.2020)
+* [Finished plot](EyeSizeData_4genotypes)
 

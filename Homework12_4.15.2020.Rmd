@@ -1,0 +1,131 @@
+---
+title: 'Homework 12: Advanced ggplotting'
+author: "Helaina Stergas"
+date: "4/15/2020"
+output: html_document
+---
+
+For this exerise, use your newly-developed ggplot chops to create some nice graphs from your own data (If you do not have a good data frame to use for graphics, use one of the many built-in data frames from R (other than mpg, which we are using in class)). Experiment with different themes, theme base sizes, aesthetics, mappings, and faceting. When you are finished, try exporting them to high quality pdfs, jpgs, eps files, or other formats that you would use for submission to a journal
+
+Using Eye Diameter and Body Length data of 4 different genotypes. Importing data table (.csv file) and loading libraries:
+```{r}
+data <- read.table(file="EyeSizeData_4genotypes.csv", sep=",", header=TRUE, stringsAsFactors=FALSE)
+# note: to get "read.table" to work, I had to get rid of the meta data at the top of the file...
+
+# head(data)
+str(data)
+
+# Load libraries
+library(ggplot2)
+library(ggthemes)
+library(patchwork)
+library(TeachingDemos)
+char2seed("zebrafish eye size")
+
+```
+
+Now, going to make some sample plots, starting with a basic boxplot of eye diameter for all 4 genotypes:
+```{r}
+p1 <- ggplot(data=data,
+             mapping=aes(x=Genotype,y=EyeDiameter)) + geom_boxplot()
+print(p1)
+```
+
+Now, making this plot nicer by filling boxplots based on genotype, labeling axes and changing fonts, and picking a new theme
+```{r}
+p1 <- ggplot(data=data,
+             mapping=aes(x=Genotype,y=EyeDiameter,
+                         fill=Genotype)) + 
+  geom_boxplot() + 
+  labs(title="Eye diameter at 72 hpf",
+       y="Eye Diameter (micrometers)") +
+  theme_classic(base_family="Arial", base_size=12) 
+print(p1)
+```
+
+Want to reverse the order of the discrete variables on the x axis, so I found the "scale_x_discrete" function:
+```{r}
+p1 <- p1 + scale_x_discrete(limits=c("CCLL","CCll","ccLL","ccll")) 
+# use "scale_x_discrete" to change discrete variable order on the x axis (also "scale_y_discrete" for y axis). "limits" allows you to define the order of the variables.
+```
+
+Changing the colors (from default colors) of each genotype manually:
+```{r}
+p1 <- p1 + scale_fill_manual(values=c("lavender",
+                                "lightslateblue",
+                                "mediumorchid4",
+                                "slateblue4"))
+print(p1)
+```
+
+Getting rid of plot legend to save space, and because its not necessarily needed here:
+```{r}
+p1 <- p1 + theme(legend.position="none")
+print(p1)
+```
+
+
+Plotting Body Length data for all 4 genotypes using the same settings as the above graph:
+```{r}
+p2 <- ggplot(data=data,
+             mapping=aes(x=Genotype,y=BodyLength,
+                         fill=Genotype)) + 
+  geom_boxplot() + 
+  labs(title="Body length at 72 hpf",
+       y="Body Length (micrometers)") +
+  theme_classic(base_family="Arial", base_size=12) +
+  scale_x_discrete(limits=c("CCLL","CCll","ccLL","ccll")) +
+  scale_fill_manual(values=c("lavender",
+                                "lightslateblue",
+                                "mediumorchid4",
+                                "slateblue4")) +
+  theme(legend.position="none")
+print(p2)
+```
+
+
+Plotting the normalized eye diameter data for all 4 genotypes using the same format too...
+```{r}
+p3 <- ggplot(data=data,
+             mapping=aes(x=Genotype,
+                         y=NormalizedEyeDiameter,
+                         fill=Genotype)) + 
+  geom_boxplot() + 
+  labs(title="Normalized eye diameter at 72 hpf",
+       y="Eye diameter/Body length ratio") +
+  theme_classic(base_family="Arial", base_size=12) +
+  scale_x_discrete(limits=c("CCLL","CCll","ccLL","ccll")) +
+  scale_fill_manual(values=c("lavender",
+                                "lightslateblue",
+                                "mediumorchid4",
+                                "slateblue4")) +
+  theme(legend.position="none")
+print(p3)
+```
+
+Trying to add sample size text annotation to the Normalized eye diameter graph. Used "annotate" to add these annotation layers to a specific x/y coordinate position on the graph. 
+```{r}
+p3 <- p3 + annotate("text", x="ccll", y=0.095, label="n=12") +
+  annotate("text", x="ccLL", y=0.095, label="n=10") + 
+  annotate("text", x="CCll", y=0.095, label="n=22") + 
+  annotate("text", x="CCLL", y=0.095, label="n=25")
+print(p3)
+```
+
+Now, putting all the plots together into one plot using "patchwork" (and adding labels to each graph using "plot_annotation(tag_levels)":
+```{r}
+p4 <- p3 / (p1 | p2) + plot_annotation(tag_levels="A")
+print(p4)
+```
+
+I like this plot, so I'm going to save it using "ggsave" as a "tiff" file (that's what we use in our lab):
+```{r}
+ggsave(plot=p4,
+       filename="EyeSizeData_4genotypes",
+       width=6,
+       height=6,
+       units="in",
+       device="tiff")
+```
+
+This plot looks great, and is publication quality! 
